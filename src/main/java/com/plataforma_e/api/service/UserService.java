@@ -1,22 +1,21 @@
 package com.plataforma_e.api.service;
 
-import com.bugred.API.model.User;
-import com.bugred.API.repository.UserRepository;
+import com.plataforma_e.api.model.User;
+import com.plataforma_e.api.repository.UserRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 public class UserService {
 
-
     private static UserService instance;
+    private final UserRepository repository;
 
-    private final UserRepository repository = new UserRepository("src/main/resources/data/users.json");
-
-
-    public UserService() {
+    // O repositório agora é instanciado com o caminho do arquivo JSON
+    private UserService() {
+        this.repository = new UserRepository("src/main/resources/mock/users.json");
     }
 
+    /** Retorna a instância de service */
     public static UserService getInstance() {
         if (instance == null) {
             instance = new UserService();
@@ -24,47 +23,48 @@ public class UserService {
         return instance;
     }
 
-    /** Retorna todos os jogadores */
+    /** Retorna a instância do repository */
+    public UserRepository getRepository() {
+        return repository;
+    }
+
+    /** Retorna todos os usuários */
     public List<User> findAll() {
         return repository.findAll();
     }
 
-    /** Busca jogador por ID */
-    public User findById(UUID id) {
+    /** Busca usuário por ID */
+    public User findById(Long id) {
         return repository.findById(id);
     }
 
-    /** Cria novo jogador, gerando ID automaticamente */
+    /** Cria novo usuário, gerando ID automaticamente */
     public User create(User user) {
-        UUID id = UUID.randomUUID();
+        Long id = generateUniqueId();
         user.setId(id);
         repository.save(user);
         return user;
     }
 
-    /** Atualiza um jogador existente */
-    public User update(UUID id, User updatedUser) {
+    /** Atualiza um usuário existente */
+    public User update(Long id, User updatedUser) {
         if (!repository.exists(id)) return null;
         updatedUser.setId(id);
         repository.save(updatedUser);
         return updatedUser;
     }
 
-    /** Remove jogador pelo ID */
-    public boolean delete(UUID id) {
+    /** Remove usuário pelo ID */
+    public boolean delete(Long id) {
         return repository.delete(id);
     }
 
-    /**
-     * Adiciona um jogador manualmente — usado para carregar dados mockados.
-     * Se o jogador já tiver um ID definido, o ID é preservado.
-     */
-    public void addUser(User user) {
-        if (user.getId() == null) {
-            UUID id = UUID.randomUUID();
-            user.setId(id);
-        }
-        repository.save(user);
+    /** Gera um ID único baseado no maior ID já existente */
+    private Long generateUniqueId() {
+        List<User> users = repository.findAll();
+        return users.stream()
+                .mapToLong(User::getId)
+                .max()
+                .orElse(0L) + 1; // Garante um ID único e sequencial
     }
 }
-

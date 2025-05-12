@@ -1,34 +1,86 @@
 package com.plataforma_e.api.model;
 
-import java.util.UUID;
+import com.plataforma_e.api.enums.UserStatus;
 
-public abstract class User {
+public class User {
 
     // Mudando id para
-    private UUID id;
+    private Long id;
     private String username;
     private String email;
+    private String imgUrl;
+    private UserStatus status;
 
-    public User(UUID id, String username, String email) {
+    // Construtor com argumentos
+    public User(Long id, String username, String email, String imgUrl) {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.imgUrl = imgUrl;
+        this.status = UserStatus.ACTIVE;
     }
 
     public User() {
 
     }
 
-    public User(UUID id) {
+    public User(String username, String email, String imgUrl, UserStatus status) {
+        this.username = username;
+        this.email = email;
+        this.imgUrl = imgUrl;
+        this.status = status;
+    }
+
+    public UserStatus isActive() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status.equals("ACTIVE") ? UserStatus.ACTIVE : UserStatus.INACTIVE;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 
-    // Getters e setters
-    public UUID getId() { return id; }
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
+    public String getUsername() {
+        return username;
+    }
 
-    public void setId(UUID id) { this.id = id; }
-    public void setUsername(String username) { this.username = username; }
-    public void setEmail(String email) { this.email = email; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
